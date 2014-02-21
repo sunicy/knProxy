@@ -122,11 +122,14 @@ class knParser{
 		}
 		$urlBase = $this->url->getAbsolute($urlField);
 		if($this->stdEncoder != false)
-			return $this->url_prefix . $this->stdEncoder->encode($urlBase);
+			return $this->url_prefix . $this->stdEncoder->encode($urlBase) . "&bind_addr=1.2.3.4";
 		return $urlBase;
 	}
 	/** Parser for non-html **/
 	protected function jsParse($js){
+		if(defined("ENABLE_JS_MOCK_WINDOW") && ENABLE_JS_MOCK_WINDOW == "true") {
+      $js = $js;
+    }
 		if(defined("ENABLE_JS_PARSING") && ENABLE_JS_PARSING == "false")
 			return $js;
 		//Remove the comments

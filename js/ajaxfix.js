@@ -9,6 +9,8 @@ XMLHttpRequest.prototype.open = function(method, url, async, username, password)
     remoteUrl += url;
   else
     remoteUrl += o.path + url;
-  var newUrl = "/index.php?url=" + remoteUrl;
+  var newUrl = window.location.protocol + "//" + 
+    window.location.host +
+    window.location.pathname + "?url=" + remoteUrl;
 	oldOpen.call(this, method, newUrl, async, username, password);
 }

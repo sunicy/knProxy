@@ -294,7 +294,20 @@ class knParser{
 			$code = preg_replace('~<\s*/\s*head\s*>~iUs','<script type="text/javascript" language="javascript">if(parent !=  null && parent.fixed != null){parent.fixed.document.getElementById(\'urlx\').value=parent.fixed.knEncode.unBase64("' . base64_encode($this->url->output($this->url->base)) . '");}</script></head>',$code);
 		
 		if(defined("ENABLE_INJECTED_AJAXFIX") && ENABLE_INJECTED_AJAXFIX == "true"){
-			$code = preg_replace("~<\s*head\s*>~iUs",'<head><script type="text/javascript" language="javascript" src="js/ajaxfix.js"></script>',$code);
+      $url = $this->url->base;
+      $new_content = 
+      '  <head>' . 
+      '  <script>' .
+      '_kn$origin = {'.
+      'proto: "' . $url["SCHEME"] . '",'.
+      'host: "' . $url["HOST"] . '",' .
+      'path: "' . $url["PATH"] . '",' .
+      'file: "' . $url["FILE"] . '",' .
+      '};' .
+      '</script>
+        <script type="text/javascript" language="javascript" src="js/ajaxfix.js"></script>
+      ';
+			$code = preg_replace("~<\s*head\s*>~iUs", $new_content,$code);
 		}
 		$code = preg_replace_callback('~(<\s*style[^>]*>)(.*)<\s*/style\s*>~iUs',Array('self','__cb_cssTag'),$code);
 		if(!$noJS){

@@ -20,19 +20,22 @@ class CookieHub {
 	/* returns an array in form of 
 		{"domain": "", "path": "", "subdomains":[]} */
 	protected function extract_url($url) {
+		$result = array(
+			"domain" => "*",
+			"path" => "/"
+		);
 		$url_components = parse_url($url);
-		if ($url_components === false)
-			return array(
-				"domain" => "-",
-				"path" => "/",
-				"subdomains" => array("-")
-			);
-		
-		return array(
-			"domain" => $url_components["host"],
-			"path" => $url_components["path"],
 
-		)
+		if ($url_components === false)
+			return $result;
+		
+		if (isset($url_components["path"]))
+			$result["path"] = $url_components["path"];
+
+		if (isset($url_components["host"]))
+			$result["domain"] = $url_components["host"];
+
+		return $result;
 	}
 
 	/*
@@ -45,12 +48,11 @@ class CookieHub {
 			$domain = substr($domain, 1);
 		$domains = array("*");
 		$tail = "";
-		foreach(array_reverse(split(".", $domains)) => $part) {
+		foreach(array_reverse(explode(".", $domain)) as $part) {
 			$tail = $part . $tail;
 			$domains[] = $tail;
 			$tail = "." . $tail;
 		}
-		$domains[] = $domain;
 		return $domains;
 	}
 
@@ -91,14 +93,31 @@ class CookieHub {
 		return $result;
 	}
 
-	public function put_cookie($name, $value, $domain="*", $expires=null) {
+
+	protected function fetch_all_cookies($domain_list, $override=true) {
+		$result = array();
+		foreach ($domain_list as $domain) {
+			if (!isset($this->hub[$domain]))
+				continue;
+			foreach ($this->hub[$domain] as $name => &$cookie)
+				if (!isset($result[$name]) || $override)
+					$result[$name] = $cookie["value"];
+		}
+		return $result;
+	}
+
+	function __construct(&$hub) {
+		$this->hub = &$hub;
+	}
+
+	public function &put_cookie($name, $value, $domain="*", $expires=null) {
 		if (isset($this->skipped_cookies[$name]))
 			return null; // sorry, can't!
 		$this->hub[$domain][$name] = array(
 			"value" => $value,
 			"expires" => $expires
 		);
-		return &$this->hub[$domain][$name];
+		return $this->hub[$domain][$name];
 	}
 
 	/* Given domain and the cookie name, delete cookie items matches.
@@ -114,24 +133,18 @@ class CookieHub {
 		return $count;
 	}
 
-	protected function fetch_all_cookies($domain_list, $override=true) {
-		$result = array();
-		foreach ($domain_list as $domain => &$cookies)
-			foreach ($cookies as $name => &$cookie)
-				if (!isset($result[$name]) || $override)
-					$result[$name] = $cookie["value"];
-		return $result;
+	/*
+		$cookie=array("name"=>"...", "value"=>"...", "expires"=>123)
+		$url="http://www.google.com/a/b/c"
+	*/
+	public function apply_cookie($cookie, $url) {
+		$url_info = $this->extract_url($url);
+		$domain = $url_info["domain"];
+		return $this->put_cookie($cookie["name"], $cookie["value"], $domain);
 	}
 
-	function __construct(&$hub) {
-		$this->hub = &$hub;
-	}
-
-	function apply_server_cookie($setcookie, $url) {
-	}
-
-	function apply_client_cookie($cookie, $url) {
-
+	public static function encode_cookie($name, $value) {
+		return ;
 	}
 
 	/*
@@ -143,10 +156,14 @@ class CookieHub {
 		$domain = $url_info["domain"];
 		$domains = $this->extract_domain($domain);
 		
-		$cookies_to_set = array_map(function ($cookie) {
-			return $
-		}, $this->fetch_all_cookies($domains, false);
+		$cookies_to_set = array();
+		foreach ($this->fetch_all_cookies($domains, false) as $name => $value)
+			$cookies_to_set[] = 
+				self::value_encode($name) . "=" .  self::value_encode($value);
 		
+		if (count($cookies_to_set) == 0)
+			return "";
+		return "Cookie: ".implode(";", $cookies_to_set);
 	}
 
 	/*
@@ -159,8 +176,8 @@ class CookieHub {
 		$domains = $this->extract_domain($domain);
 		$cookies_to_set = $this->fetch_all_cookies($domains);
 		$cookies_to_del = array_diff_key(
-			$cookies_to_set, 
-			$this->fetch_all_cookies($all_domains)
+			$this->fetch_all_cookies($all_domains),
+			$cookies_to_set
 		);
 		// TODO: consider cookies sent by client, and less setcookie(s) are needed
 		foreach ($cookies_to_del as $name => $value)

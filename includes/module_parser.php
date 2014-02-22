@@ -128,13 +128,12 @@ class knParser{
 	/** Parser for non-html **/
 	protected function jsParse($js){
 		if(defined("ENABLE_JS_FAKE_WINDOW") && ENABLE_JS_FAKE_WINDOW == "true") {
-      $js = preg_replace("([^a-zA-Z0-9_]?)(window)([ ;,]?)", "$1fakeWindow$3", $js);
+      //$js = preg_replace("([^a-zA-Z0-9_]?)(window)([ ;,]?)", "$1fakeWindow$3", $js);
       if (strpos($js, "/*NO WRAP*/") === false)
         $js = 
-        " with (fakeWindow) {
-              $js;
-              window.syncWindow();
-            }
+        " with (window) {
+            $js;
+            //window.syncWindow();
           }
         ";
         return $js;

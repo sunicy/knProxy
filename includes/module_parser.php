@@ -127,8 +127,17 @@ class knParser{
 	}
 	/** Parser for non-html **/
 	protected function jsParse($js){
-		if(defined("ENABLE_JS_MOCK_WINDOW") && ENABLE_JS_MOCK_WINDOW == "true") {
-      $js = $js;
+		if(defined("ENABLE_JS_FAKE_WINDOW") && ENABLE_JS_FAKE_WINDOW == "true") {
+      $js = preg_replace("([^a-zA-Z0-9_]?)(window)([ ;,]?)", "$1fakeWindow$3", $js);
+      if (strpos($js, "/*NO WRAP*/") === false)
+        $js = 
+        " with (fakeWindow) {
+              $js;
+              window.syncWindow();
+            }
+          }
+        ";
+        return $js;
     }
 		if(defined("ENABLE_JS_PARSING") && ENABLE_JS_PARSING == "false")
 			return $js;
@@ -300,15 +309,21 @@ class knParser{
       $url = $this->url->base;
       $new_content = 
       '  <head>' . 
-      '  <script>' .
+      '  <script>/*NO WRAP*/' . // critical "/*NO WRAP*/"
       '_kn$origin = {'.
       'proto: "' . $url["SCHEME"] . '",'.
       'host: "' . $url["HOST"] . '",' .
       'path: "' . $url["PATH"] . '",' .
       'file: "' . $url["FILE"] . '",' .
+      'protocol: "' . $url["SCHEME"] . '",' .
+      'hostname: "' . $url["HOST"] . '",' .
       '};' .
+      'p$location = _kn$origin;'.
+      'p$location.pathname = p$location.path + p$location.file;'.
+      'p$location.href = p$location.protocol + "/" + "/" + p$location.host + p$location.pathname;'.
       '</script>
         <script type="text/javascript" language="javascript" src="js/ajaxfix.js"></script>
+        <script type="text/javascript" language="javascript" src="js/wrapwindow.js"></script>
       ';
 			$code = preg_replace("~<\s*head\s*>~iUs", $new_content,$code);
 		}

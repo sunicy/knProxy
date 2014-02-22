@@ -9,7 +9,7 @@
 };*/
 var oldOpen= XMLHttpRequest.prototype.open;
 XMLHttpRequest.prototype.open = function(method, url, async, username, password){
-  console.log(url);
+  console.log("OPEN");
   var o = _kn$origin;
   var remoteUrl = o.proto + "//" + o.host;
   if (url.length == 0 || url.charAt(0) == "?")

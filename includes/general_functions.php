@@ -9,6 +9,11 @@ function clearcookies() {
 
 function parse_fullurl($encoder, $fullurl) {
 	$url_components = parse_url($fullurl);
+	if (!isset($url_components["query"]))
+		return array(
+			"url" => "",
+			"bind_addr" => ""
+		);
 	parse_str($url_components["query"], $query);
 	if (isset($query["____url"])) {
 		$url = $query["____url"];
@@ -26,9 +31,12 @@ function parse_fullurl($encoder, $fullurl) {
 	}
 	else
 		$url = ""; // forget about referer!
+	
+	$bind_addr = (isset($query["____bind_addr"])) ? 
+		$query["____bind_addr"] : null;
 	return array(
 		"url" => $url,
-		"bind_addr" => $query["____bind_addr"]
+		"bind_addr" => $bind_addr
 	);
 }
 

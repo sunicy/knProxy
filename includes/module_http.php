@@ -94,7 +94,9 @@ class knHttp{
 		}
 	}
 	function getCookies(){
-		$cookies = $this->cookies;
+		$cookiehub = CookieHub::get_instance();
+		return $cookiehub->gen_server_cookies($this->url);
+		/*$cookies = $this->cookies;
 		if(!is_array($cookies) ||  count($cookies)<1){
 			return '';
 		}else{
@@ -108,7 +110,7 @@ class knHttp{
 				$curr++;
 			}
 			return $ret;
-		}
+		}*/
 	}
 	function head(){
 		/** Head Calls check for availability **/
@@ -370,13 +372,17 @@ class knHttp{
 						$head['HTTP_LOCATION'] = preg_replace('~^\s*~','',$pair[1]);						
 					}break;
 					case 'SET-COOKIE':{
-						$cookie = explode(';',$pair[1]);
+						$cookiehub = CookieHub::get_instance();
+						$cookie = CookieHub::parse_cookie_str($pair[1]);
+
+						$cookiehub->apply_cookie($cookie, $this->url);
+						/*$cookie = explode(';',$pair[1]);
 						if(is_array($cookie) && count($cookie)>1)
 							$cookie[1] = preg_replace('~expires\s*=\s*~iUs','',$cookie[1]);
 						else
 							$cookie[1] = '';
 						$cookie_ = preg_split('~=~iUs',preg_replace('~^\s*~','',$cookie[0]),2);
-						$head['HTTP_COOKIES'][] = Array($cookie_[0],$cookie_[1],$cookie[1]);
+						$head['HTTP_COOKIES'][] = Array($cookie_[0],$cookie_[1],$cookie[1]);*/
 					}break;
 					case 'WWW-AUTHENTICATE-MODE':{
 						$head['WWW_AUTHENTICATE_MODE'] = $pair[1];
@@ -429,6 +435,7 @@ class knHttp{
 				}
 			}
 		}
+
 		return $head;
 	}
 }

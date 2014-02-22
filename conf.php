@@ -1,4 +1,6 @@
 <?php
+//error_reporting(E_ALL);
+//ini_set( 'display_errors','1'); 
 define('KNPROXY_SECRET','joWVexlW4fHeH/2GGNLefy8bV7JFaaTTF92AWp1k0jDsMqC8tqeAvdLo/gg');
 // Set the language for KnProxy (currently supports en-US and ja-JP)
 define('KNPROXY_LANGUAGE','zh-CN');
@@ -45,6 +47,6 @@ define('KNPROXY_BINARY_CUTOFF',32*1024);//Cutoff of 32kb for binary data
 @ini_set('pcre.backtrack_limit', 10000000);
 @ini_set('pcre.recursion_limit', 10000000);
 @ini_set('memory_limit','128M');
-@set_time_limit(180);
+//@set_time_limit(180);
 @error_reporting(0);
 ?>

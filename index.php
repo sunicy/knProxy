@@ -1,10 +1,12 @@
 <?php
 require_once('conf.php');
+require_once("includes/module_cookiehub.php");
 require_once('includes/module_parser.php');
 require_once('includes/module_encoder.php');
 require_once('includes/module_url.php');
 require_once('includes/module_http.php');
 require_once('includes/general_functions.php');
+
 
 session_start();
 
@@ -55,7 +57,10 @@ if(!isset($_GET['____url']) || $_GET['____url']==''){
 	exit();
 }
 $url = $_GET['____url'];
-$referer = parse_fullurl($knEncoder, $_SERVER["HTTP_REFERER"])["url"];
+if (isset($_SERVER["HTTP_REFERER"]))
+	$referer = parse_fullurl($knEncoder, $_SERVER["HTTP_REFERER"])["url"];
+else
+	$referer = "";
 $knEncoder->serverKey = KNPROXY_SECRET;
 if(isset($_GET['____encrypt_key'])){
 	$key = (int)$_GET['____encrypt_key'];
@@ -263,9 +268,14 @@ if(!empty($headers['CONTENT_RANGE']))
 /** Http Refresh Headers **/
 if(isset($headers['HTTP_REFRESH'])){
 	$pre=basename(__FILE__) . '?____url=';
-	header('refresh:'.(int)$headers['refresh'][0].';url='. $pre . $knEncoder->encode($knURL->getAbsolute($headers['refresh'][1])));
+	@header('refresh:'.(int)$headers['refresh'][0].';url='. $pre . $knEncoder->encode($knURL->getAbsolute($headers['refresh'][1])));
 }
 
+$cookiehub = CookieHub::get_instance();
+$cookiehub->gen_client_cookies($url);
+//var_dump($url); die();
+
+/*var_dump($headers['HTTP_COOKIES']);die();
 if(isset($headers['HTTP_COOKIES']) && is_array($headers['HTTP_COOKIES']))
 	foreach($headers['HTTP_COOKIES'] as $cookie){
 		if($cookie[0] == "knp_settings" || $cookie[0] == "knp_login")
@@ -278,6 +288,8 @@ if(isset($headers['HTTP_COOKIES']) && is_array($headers['HTTP_COOKIES']))
 		}
 
 	}
+*/
+
 /** Parsing Process **/
 $knParser = new knParser($knURL,$knHTTP->content,$_SCRIPT . '?____url=');
 $knParser->setMimeType($knHTTP->doctype);

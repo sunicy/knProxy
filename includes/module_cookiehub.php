@@ -56,6 +56,31 @@ class CookieHub {
 		return $domains;
 	}
 
+	/*
+		Given: uid=123; expires=100; httpsonly
+		=> 
+		{
+			"uid" => "123",
+			"expires" => "100",
+			"httpsonly" => ""
+		}
+	*/
+	public static function parse_cookie_str($s) {
+		$result = array();
+		$pairs = explode(";", $s);
+		$name_value = explode("=", $pairs[0]);
+		if (count($name_value) != 2)
+			return false; // no key-value pair found
+		$result["name"] = self::value_decode($name_value[0]);
+		$result["value"] = self::value_decode($name_value[1]);
+		for ($i = 1, $l = count($pairs); $i < $l; ++$i) {
+			$name_value = explode("=", $pairs[$i]);
+			$result[self::value_decode($name_value[0])] =
+				count($name_value) < 2 ? true : self::value_decode($name_value[1]);
+		}
+		return $result;
+	}
+
 	public static function get_instance() {
 		$SESSION_KEY = "____cookie_hub";
 		if (!isset($_SESSION["$SESSION_KEY"]))
@@ -69,7 +94,7 @@ class CookieHub {
 	}
 
 	public static function value_decode($s) {
-		return urldecode(str_replace("%3B", ";"));
+		return urldecode(str_replace("%3B", ";", trim($s)));
 	}
 
 	/*
@@ -110,9 +135,11 @@ class CookieHub {
 		$this->hub = &$hub;
 	}
 
-	public function &put_cookie($name, $value, $domain="*", $expires=null) {
+	public function put_cookie($name, $value, $domain="*", $expires=null) {
 		if (isset($this->skipped_cookies[$name]))
 			return null; // sorry, can't!
+		if (trim($name) == "")
+			return null; // sorry, no empty things allowed
 		$this->hub[$domain][$name] = array(
 			"value" => $value,
 			"expires" => $expires
@@ -139,12 +166,24 @@ class CookieHub {
 	*/
 	public function apply_cookie($cookie, $url) {
 		$url_info = $this->extract_url($url);
-		$domain = $url_info["domain"];
-		return $this->put_cookie($cookie["name"], $cookie["value"], $domain);
-	}
+		$domain = (isset($cookie["domain"])) ? $cookie["domain"] : 
+			$url_info["domain"];
+		if (substr($domain, 0, 1) === ".") // avoiding empty str
+			$domain = substr($domain, 1);
 
-	public static function encode_cookie($name, $value) {
-		return ;
+		if (!isset($cookie["expires"]))
+			$expires = null;
+		else {
+			if (is_int($cookie["expires"]))
+				$expires = $cookie["expires"];
+			else
+				$expires = strtotime($cookie["expires"]);
+			if ($expires < time())
+				return false; // expired already!
+		}
+		return $this->put_cookie(
+			$cookie["name"], $cookie["value"], $domain, $expires
+		);
 	}
 
 	/*
@@ -163,7 +202,7 @@ class CookieHub {
 		
 		if (count($cookies_to_set) == 0)
 			return "";
-		return "Cookie: ".implode(";", $cookies_to_set);
+		return implode(";", $cookies_to_set);
 	}
 
 	/*

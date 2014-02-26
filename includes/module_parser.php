@@ -218,7 +218,7 @@ class knParser{
 		}
 		if($unesc != $jsStr)
 			$esc = true;
-		$unesc = preg_replace_callback('~(href|src|codebase|url|action)\s*=\s*([\'\"])(?(2) (.*?)\\2 | ([^\s\>]+))~isx',array('self','__cb_url'),$unesc);
+		$unesc = preg_replace_callback('~([^.]href|src|codebase|url|action)\s*=\s*([\'\"])(?(2) (.*?)\\2 | ([^\s\>]+))~isx',array('self','__cb_url'),$unesc);
 		if(isset($esc) && $esc)
 			$unesc = preg_replace('~/~',"\\/",$unesc);
 		return $unesc;
@@ -241,7 +241,7 @@ class knParser{
 				$is_pform=true;
 			}
 		}
-		$code = preg_replace_callback('~(href|src|codebase|url|action)\s*=\s*([\'\"])?(?(2) (.*?)\\2 | ([^\s\>]+))~isx',array('self','__cb_url'),$match[1]);
+		$code = preg_replace_callback('~([^.]href|src|codebase|url|action)\s*=\s*([\'\"])?(?(2) (.*?)\\2 | ([^\s\>]+))~isx',array('self','__cb_url'),$match[1]);
 		$code = preg_replace_callback('~(style\s*=\s*)([\'\"])(.*)\2~iUs',Array('self','__cb_cssEmbed'),$code);
 		if($is_pform)
 			return '<' . $code . '><input type="hidden" name="knproxy_gettopost" value="true">';

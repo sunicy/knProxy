@@ -27,11 +27,11 @@ $_LANG = KNPROXY_LANGUAGE;
 		if($("check_enc").checked){
 			var random = Math.floor(Math.random() * 256)+1;
 			var url_value = $("urlx").value;
-			$("url").value = encryptText(document.getElementById("urlx").value,random);
+			$("____url").value = encryptText(document.getElementById("urlx").value,random);
 			$("encrypt_key").value = random;
 			return true;
 		}else{
-			$("url").value = $("urlx").value;
+			$("____url").value = $("urlx").value;
 			return true;
 		}
 	}
@@ -58,7 +58,7 @@ $_LANG = KNPROXY_LANGUAGE;
 	<form name="KN_BFORM" action="../index.php" method="GET" target="dynamic" onsubmit="return checkAndEncode();">
 	<div style="height: 45px;padding: 0px; position:relative;">
 		<input type="submit" value="<?php echo knproxy_i18n('navigate',$_LANG);?>" style="font-size: 1em;">
-		<input type="hidden" id="url" name="url" value="" />
+		<input type="hidden" id="____url" name="____url" value="" />
 		<input type="text" id="urlx" value="http://" ondblclick="this.value='';">
 		<div class="mobilenoshow">
 			<input type="checkbox" id="check_enc" value="1" CHECKED><?php echo knproxy_i18n('encode',$_LANG);?>&nbsp;

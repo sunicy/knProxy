@@ -45,11 +45,11 @@ function commitSettings($key, $value){
 }
 
 $knEncoder = new knEncoder();
-if(!isset($_GET['url']) || $_GET['url']==''){
+if(!isset($_GET['____url']) || $_GET['____url']==''){
 	include('index.inc.php');
 	exit();
 }
-$url = $_GET['url'];
+$url = $_GET['____url'];
 $knEncoder->serverKey = KNPROXY_SECRET;
 if(isset($_GET['encrypt_key'])){
 	$key = (int)$_GET['encrypt_key'];
@@ -192,13 +192,13 @@ if(((int)$headers['HTTP_RESPONSE']>=400 && $headers['HTTP_RESPONSE']!=404) || (i
 header('Content-Type: ' . $knHTTP->doctype);
 /** Need Redirection? **/
 if(isset($headers['KNPROXY_LOCATION']) && $headers['KNPROXY_LOCATION']!=""){
-	header('Location: ' . basename(__FILE__) . "?url=" . $knEncoder->encode($headers['KNPROXY_LOCATION']));
+	header('Location: ' . basename(__FILE__) . "?____url=" . $knEncoder->encode($headers['KNPROXY_LOCATION']));
 	exit();
 }
 if(isset($headers['HTTP_LOCATION']) && $headers['HTTP_LOCATION']!=''){
 	$url = $knURL->getAbsolute($headers['HTTP_LOCATION']);
 	$knurl = $knEncoder->encode($url);
-	$nURL = basename(__FILE__) . "?url=" . $knurl;
+	$nURL = basename(__FILE__) . "?____url=" . $knurl;
 	header('Location: ' . $nURL );
 }
 /** Downloads And Filename **/
@@ -234,7 +234,7 @@ if(!empty($headers['CONTENT_RANGE']))
 	header('Content-Range: ' . $headers['CONTENT_RANGE']);
 /** Http Refresh Headers **/
 if(isset($headers['HTTP_REFRESH'])){
-	$pre=basename(__FILE__) . '?url=';
+	$pre=basename(__FILE__) . '?____url=';
 	header('refresh:'.(int)$headers['refresh'][0].';url='. $pre . $knEncoder->encode($knURL->getAbsolute($headers['refresh'][1])));
 }
 
@@ -251,7 +251,7 @@ if(isset($headers['HTTP_COOKIES']) && is_array($headers['HTTP_COOKIES']))
 
 	}
 /** Parsing Process **/
-$knParser = new knParser($knURL,$knHTTP->content,$_SCRIPT . '?url=');
+$knParser = new knParser($knURL,$knHTTP->content,$_SCRIPT . '?____url=');
 $knParser->setMimeType($knHTTP->doctype);
 $knParser->setCharset($knHTTP->doctype,$knHTTP->content);
 $knParser->setEncoder($knEncoder);

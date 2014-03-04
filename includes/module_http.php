@@ -233,6 +233,7 @@ class knHttp{
 	}
 	function fsockets_send(){
 		/** Allows limited running in FileSockets mode, Buggy and not tested **/
+		die("Please use cUrl instead!");
 		if($this->http_get!=''){
 			if(substr_count('?',$this->url)>0){
 				$this->url.='&'.$this->http_get;
@@ -300,6 +301,10 @@ class knHttp{
 				$this->url.='?'.$this->http_get;
 			}
 		}
+		/* Bind source IP is ____bind_addr is set */
+		$bind_addr = (isset($_GET["____bind_addr"])) ? $_GET["____bind_addr"] : null;
+		if ($bind_addr)
+			@curl_setopt($ch, CURLOPT_INTERFACE, $bind_addr);
 		@curl_setopt($ch, CURLOPT_URL, $this->url);
 		@curl_setopt($ch, CURLOPT_HEADER, 1);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

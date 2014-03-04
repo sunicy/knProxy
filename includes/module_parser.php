@@ -113,6 +113,7 @@ class knParser{
 	}
 	/** Below are the primary parse modules **/
 	protected function toAbsoluteUrl($urlField){
+		$bind_addr = (isset($_GET["____bind_addr"])) ? $_GET["____bind_addr"] : null;
 		if($urlField == '')
 			return '';
 		if(strtolower(substr($urlField,0,5)) == 'data:' || strtolower(substr($urlField,0,1)) == '#'){
@@ -122,7 +123,7 @@ class knParser{
 		}
 		$urlBase = $this->url->getAbsolute($urlField);
 		if($this->stdEncoder != false)
-			return $this->url_prefix . $this->stdEncoder->encode($urlBase);
+			return $this->url_prefix . $this->stdEncoder->encode($urlBase) . ($bind_addr ? ("&____bind_addr=" . $bind_addr) : "");
 		return $urlBase;
 	}
 	/** Parser for non-html **/

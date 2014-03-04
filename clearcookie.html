@@ -1,0 +1,27 @@
+<html>
+<head>
+<script>
+function DeleteCookie(name){
+  var exp = new Date();
+  exp.setTime (exp.getTime() - 1);
+  document.cookie = name + "=; expires=" + exp.toGMTString();
+}
+
+function ClearCookie(){
+  var temp=document.cookie.split(";");
+  var loop3;
+  var ts;
+  for (loop3=0;loop3<temp.length;loop3++){
+    ts=temp[loop3].split("=")[0];
+    DeleteCookie(ts);
+  }
+}
+
+ClearCookie();
+document.write("Cookie cleared!");
+setTimeout(function() {
+	window.close();
+}, 3000);
+</script>
+</head>
+</html>

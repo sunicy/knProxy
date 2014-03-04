@@ -51,8 +51,8 @@ if(!isset($_GET['____url']) || $_GET['____url']==''){
 }
 $url = $_GET['____url'];
 $knEncoder->serverKey = KNPROXY_SECRET;
-if(isset($_GET['encrypt_key'])){
-	$key = (int)$_GET['encrypt_key'];
+if(isset($_GET['____encrypt_key'])){
+	$key = (int)$_GET['____encrypt_key'];
 	$knEncoder->setKey($key);
 	$knEncoder->serverKey='';
 }
@@ -91,6 +91,24 @@ if(strtolower(substr($_SERVER['HTTP_HOST'],0,4))!='http' && (!isset($_SERVER['HT
 }else{
 	$_HOST = 'https://' . $_SERVER['HTTP_HOST'];
 }
+
+/* walk through all GET parameters, pick ones not prifixed with ____,
+and regard them as paras the websites want */
+$extra_paras = "";
+foreach ($_GET as $key => $val) {
+	if (substr($key, 0, 4) != "____")
+		$extra_paras .= "&".$key."=".$val;
+}
+$extra_paras = substr($extra_paras, 1); // remove first &
+
+if (strlen($extra_paras) > 0) {
+	if (strpos($url, "?") === false)
+		$url .= "?";
+	else
+		$url .= "&";
+	$url .= $extra_paras;
+}
+
 $_SCRIPT =$_HOST . $_SERVER['SCRIPT_NAME'];
 /** Create the modules **/
 $knURL = new knUrl();

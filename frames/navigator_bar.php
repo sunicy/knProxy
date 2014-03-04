@@ -28,7 +28,7 @@ $_LANG = KNPROXY_LANGUAGE;
 			var random = Math.floor(Math.random() * 256)+1;
 			var url_value = $("urlx").value;
 			$("____url").value = encryptText(document.getElementById("urlx").value,random);
-			$("encrypt_key").value = random;
+			$("____encrypt_key").value = random;
 			return true;
 		}else{
 			$("____url").value = $("urlx").value;
@@ -65,7 +65,7 @@ $_LANG = KNPROXY_LANGUAGE;
 			<input type="checkbox" name="debug" value="true"><?php echo knproxy_i18n('debug',$_LANG);?>
 			<a href="javascript:;" onclick="top.location = top.dynamic.location;"><?php echo knproxy_i18n('hide_bar',$_LANG);?></a>
 		</div>
-		<input type="hidden" name="encrypt_key" id="encrypt_key" value="" />
+		<input type="hidden" name="____encrypt_key" id="____encrypt_key" value="" />
 	</div>
 	</form>
 </body>

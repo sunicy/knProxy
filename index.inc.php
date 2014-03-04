@@ -24,7 +24,7 @@ function checkAndEncode(){
 		var random = Math.round(Math.random() * 10);
 		var url_value = document.getElementById("url").value;
 		document.getElementById("url").value = encryptText(document.getElementById("url").value,random);
-		document.getElementById("encrypt_key").value = random;
+		document.getElementById("____encrypt_key").value = random;
 	}else{
 		return true;
 	}
@@ -45,7 +45,7 @@ function checkAndEncode(){
 	<span class="options"><input type="checkbox" name="enc_pre" id="check_enc" value="1" CHECKED>发送地址前本机加密（避免第一次截获）<br>
 	<input type="checkbox" name="enp" id="check_pen" value="true">加密页面（躲过内容关键字筛查）<br>
 	<input type="checkbox" name="debug" id="dbg_sel" value="true">直接进入调试模式(Debug Mode)</span>&nbsp;
-	<br><input type="hidden" name="encrypt_key" id="encrypt_key" value="">
+	<br><input type="hidden" name="____encrypt_key" id="____encrypt_key" value="">
 	<input type="submit" value="I'm Feeling Lucky" name="LuckyButton"></p>
 </form>
 <div align="center">

@@ -212,14 +212,15 @@ if(((int)$headers['HTTP_RESPONSE']>=400 && $headers['HTTP_RESPONSE']!=404) || (i
 /** Load The Page **/
 header('Content-Type: ' . $knHTTP->doctype);
 /** Need Redirection? **/
+$bind_addr = (isset($_GET["____bind_addr"])) ? "____bind_addr=".$_GET["____bind_addr"] : "";
 if(isset($headers['KNPROXY_LOCATION']) && $headers['KNPROXY_LOCATION']!=""){
-	header('Location: ' . basename(__FILE__) . "?____url=" . $knEncoder->encode($headers['KNPROXY_LOCATION']));
+	header('Location: ' . basename(__FILE__) . "?$bind_addr&____url=" . $knEncoder->encode($headers['KNPROXY_LOCATION']));
 	exit();
 }
 if(isset($headers['HTTP_LOCATION']) && $headers['HTTP_LOCATION']!=''){
 	$url = $knURL->getAbsolute($headers['HTTP_LOCATION']);
 	$knurl = $knEncoder->encode($url);
-	$nURL = basename(__FILE__) . "?____url=" . $knurl;
+	$nURL = basename(__FILE__) . "?$bind_addr&____url=" . $knurl;
 	header('Location: ' . $nURL );
 }
 /** Downloads And Filename **/

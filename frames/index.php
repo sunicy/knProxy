@@ -5,7 +5,7 @@ include_once('../includes/general_functions.php');
 $_LANG = KNPROXY_LANGUAGE;
 $_KNPROXY_NAVIGATOR_PAGE='navigator_bar.php';
 
-$url_para = (isset($_GET["____url"])) ? "?____url=".$_GET["____url"] : "";
+$url_para = (isset($_GET["____url"])) ? "?____url=".urlencode($_GET["____url"]) : "";
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 <HTML>

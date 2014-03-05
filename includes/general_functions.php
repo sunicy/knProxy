@@ -1,4 +1,12 @@
 <?php
+function clearcookies() {
+	$oldtime = time() - 1000;
+	foreach ($_COOKIE as $key => $val) {
+		if (substr($key, "knp") !== 0)
+			setcookie($key, "", $oldtime);
+	}
+}
+
 function checkHttpURL($url){
 	//CHECKS URL
 	if(strtolower(substr($url,0,4))!='http'){

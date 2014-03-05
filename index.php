@@ -6,6 +6,9 @@ require_once('includes/module_url.php');
 require_once('includes/module_http.php');
 require_once('includes/general_functions.php');
 
+if (isset($_GET["____clear_cookies"]))
+	clearcookies();
+
 function extractSettings($settingName,$default = null){
 	if(isset($_COOKIE["knp_settings"])){
 		$v = explode(",",$_COOKIE["knp_settings"]);

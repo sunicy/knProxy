@@ -6,6 +6,8 @@ if(!defined('KNPROXY_NAVBAR') || KNPROXY_NAVBAR!='true'){
 	exit('<html><title>404 Not Found</title><h1>404 Not Found</h1></html>');
 }
 $_LANG = KNPROXY_LANGUAGE;
+
+$default_urlx = (isset($_GET["____url"])) ? $_GET["____url"] : "http://";
 ?>
 <!doctype html>
 <html>
@@ -59,7 +61,7 @@ $_LANG = KNPROXY_LANGUAGE;
 	<div style="height: 45px;padding: 0px; position:relative;">
 		<input type="submit" value="<?php echo knproxy_i18n('navigate',$_LANG);?>" style="font-size: 1em;">
 		<input type="hidden" id="____url" name="____url" value="" />
-		<input type="text" id="urlx" value="http://" ondblclick="this.value='';">
+		<input type="text" id="urlx" value="<?php echo $default_urlx; ?>" ondblclick="this.value='';">
 		<div class="mobilenoshow">
 			<input type="checkbox" id="check_enc" value="1" CHECKED><?php echo knproxy_i18n('encode',$_LANG);?>&nbsp;
 			<input type="checkbox" name="debug" value="true"><?php echo knproxy_i18n('debug',$_LANG);?>

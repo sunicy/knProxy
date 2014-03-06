@@ -117,6 +117,9 @@ $_SCRIPT =$_HOST . $_SERVER['SCRIPT_NAME'];
 /** Create the modules **/
 $knURL = new knUrl();
 $knURL->setBaseurl($url);
+if (isset($_GET["____debug"]))
+	die($url);
+
 $knHTTP = new knHttp($url, $referer);
 
 /** Init them **/

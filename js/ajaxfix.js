@@ -1,6 +1,7 @@
-var oldOpen= XMLHttpRequest.prototype.open;
+if (typeof oldOpen === "undefined")
+  oldOpen = XMLHttpRequest.prototype.open;
 XMLHttpRequest.prototype.open = function(method, url, async, username, password){
-  console.log(url);
+  console.log("ajax:"+url);
   var o = _kn$origin;
   var remoteUrl = o.proto + "//" + o.host;
   if (url.length == 0 || url.charAt(0) == "?")
@@ -9,8 +10,13 @@ XMLHttpRequest.prototype.open = function(method, url, async, username, password)
     remoteUrl += url;
   else
     remoteUrl += o.path + url;
-  var newUrl = window.location.protocol + "//" + 
-    window.location.host +
-    window.location.pathname + "?url=" + remoteUrl;
-	oldOpen.call(this, method, newUrl, async, username, password);
+  var newUrl = //window.location.protocol + "//" + 
+    //window.location.host +
+    window.location.pathname + "?____url=" + remoteUrl;
+  if (url.search("____url") >= 0) {
+    newUrl = url; // it's our friend, pass!
+    console.log("Url not changed.");
+  }
+  console.log("ajax-new: " + newUrl);
+  return oldOpen.call(this, method, newUrl, async, username, password);
 }

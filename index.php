@@ -53,6 +53,7 @@ if(!isset($_GET['____url']) || $_GET['____url']==''){
 	exit();
 }
 $url = $_GET['____url'];
+$referer = parse_fullurl($knEncoder, $_SERVER["HTTP_REFERER"])["url"];
 $knEncoder->serverKey = KNPROXY_SECRET;
 if(isset($_GET['____encrypt_key'])){
 	$key = (int)$_GET['____encrypt_key'];
@@ -116,7 +117,7 @@ $_SCRIPT =$_HOST . $_SERVER['SCRIPT_NAME'];
 /** Create the modules **/
 $knURL = new knUrl();
 $knURL->setBaseurl($url);
-$knHTTP = new knHttp($url);
+$knHTTP = new knHttp($url, $referer);
 
 /** Init them **/
 if(isset($_POST['knproxy_gettopost']) && $_POST['knproxy_gettopost']=='true'){

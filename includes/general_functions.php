@@ -7,6 +7,31 @@ function clearcookies() {
 	}
 }
 
+function parse_fullurl($encoder, $fullurl) {
+	$url_components = parse_url($fullurl);
+	parse_str($url_components["query"], $query);
+	if (isset($query["____url"])) {
+		$url = $query["____url"];
+		if (!preg_match("~/~", $url)) {
+			$encoder->serverKey = KNPROXY_SECRET;
+			if (isset($query["____encrypt_key"])) {
+				$key = (int)$query['____encrypt_key'];
+				$encoder->setKey($key);
+				$encoder->serverKey='';
+			}
+			$url = $encoder->decode($url);
+			$encoder->serverKey = KNPROXY_SECRET;
+			$encoder->setKey(0);
+		}
+	}
+	else
+		$url = ""; // forget about referer!
+	return array(
+		"url" => $url,
+		"bind_addr" => $query["____bind_addr"]
+	);
+}
+
 function checkHttpURL($url){
 	//CHECKS URL
 	if(strtolower(substr($url,0,4))!='http'){

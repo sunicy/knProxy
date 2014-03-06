@@ -21,11 +21,12 @@ class knHttp{
 	var $content;
 	var $headers;
 	var $doctype;
-	function __construct($url,$streaming = false){
+	function __construct($url, $referer=null, $streaming = false){
 		$this->url = $url;
 		$this->streaming = $streaming;
 		$this->user_agent = $_SERVER['HTTP_USER_AGENT'];
 		$this->set_referer(KNPROXY_REFERER);
+		$this->referer = $referer;
 		if(strtolower(substr($this->url,0,6))=='https:')
 			$this->is_https=true;
 		else
@@ -43,6 +44,8 @@ class knHttp{
 		$this->mode = $mode;
 	}
 	function set_referer($referer = 'none'){
+		if ($this->referer != null)
+			return; //nothing to do
 		switch($referer){
 			case 'pseudo': $this->referer = $this->url;break;
 			case 'none': $this->referer = '';break;
@@ -291,8 +294,10 @@ class knHttp{
 		/** Added Support For Streaming Connections **/
 		if($this->streaming)
 			return;
-		if($this->mode!='curl')
+		if($this->mode!='curl') {
+			die("Do NOT use fsockets!");
 			return $this->fsockets_send();
+		}
 		$ch = curl_init();
 		if($this->http_get!=''){
 			if(substr_count('?',$this->url)>0){
@@ -335,6 +340,13 @@ class knHttp{
 		}
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->user_agent);
 		$raw = curl_exec($ch);
+		if (strpos($this->url, "/ServiceLoginAuth") !== False) {
+			echo $raw."<br>";
+			echo $this->url;
+			echo "\n";
+			echo $this->referer;
+			die();
+		}
 		$this->doctype = @curl_getinfo($ch,CURLINFO_CONTENT_TYPE);
 		curl_close($ch);
 		$spl = preg_split('~\r*\n\r*\n~',$raw,2);

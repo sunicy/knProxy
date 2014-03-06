@@ -153,6 +153,8 @@ class knParser{
 				if(!$regex){
 					$lookAhead = substr($js,$ptr + 1,256);
 					$lookBehind = substr($js,$ptr - 10,10);
+					// What if only '//' instead of '://'
+					//$ptr++; continue;
 					if(preg_match('~[a-zA-Z0-9)]\s*$~iUs',$lookBehind) || !preg_match('~/~',$lookAhead)){
 						$ptr++;continue;
 					}
@@ -205,7 +207,7 @@ class knParser{
 		if(preg_match('~^http://(www\.)*w3\.org~',$jsStr))
 			return $jsStr;//This is for initing namespaces probably.
 		$unesc = preg_replace('~\\\\/~','/',$jsStr);
-		if(preg_match('~^https*://~',$unesc,$m) || preg_match('~^//~',$unesc,$m)){
+		if(preg_match('~^https*://~',$unesc,$m) || preg_match('~^//[0-9a-zA-Z]~',$unesc,$m)){
 			if($unesc == $jsStr)
 				return $this->toAbsoluteUrl($unesc) . '&x=';
 			else
@@ -297,7 +299,7 @@ class knParser{
 		if(defined("ENABLE_INJECTED_AJAXFIX") && ENABLE_INJECTED_AJAXFIX == "true"){
       $url = $this->url->base;
       $new_content = 
-      '  <head>' . 
+      '  <head $1>' . 
       '  <script>' .
       '_kn$origin = {'.
       'proto: "' . $url["SCHEME"] . '",'.
@@ -308,7 +310,7 @@ class knParser{
       '</script>
         <script type="text/javascript" language="javascript" src="js/ajaxfix.js"></script>
       ';
-			$code = preg_replace("~<\s*head\s*>~iUs", $new_content,$code);
+			$code = preg_replace("~<\s*head\s*([^>]*)?>~iUs", $new_content,$code);
 		}
 		$code = preg_replace_callback('~(<\s*style[^>]*>)(.*)<\s*/style\s*>~iUs',Array('self','__cb_cssTag'),$code);
 		if(!$noJS){

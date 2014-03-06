@@ -87,7 +87,7 @@ class knHttp{
 				if($curr!=0){
 					$ret.='&';
 				}
-				$ret.=$name . '=' . $value;
+				$ret.=$name . '=' . rawurlencode($value);
 				$curr++;
 			}
 			return $ret;

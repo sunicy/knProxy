@@ -340,13 +340,6 @@ class knHttp{
 		}
 		curl_setopt($ch, CURLOPT_USERAGENT, $this->user_agent);
 		$raw = curl_exec($ch);
-		if (strpos($this->url, "/ServiceLoginAuth") !== False) {
-			echo $raw."<br>";
-			echo $this->url;
-			echo "\n";
-			echo $this->referer;
-			die();
-		}
 		$this->doctype = @curl_getinfo($ch,CURLINFO_CONTENT_TYPE);
 		curl_close($ch);
 		$spl = preg_split('~\r*\n\r*\n~',$raw,2);

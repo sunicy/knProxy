@@ -6,6 +6,8 @@ require_once('includes/module_url.php');
 require_once('includes/module_http.php');
 require_once('includes/general_functions.php');
 
+session_start();
+
 if (isset($_GET["____clear_cookies"]))
 	clearcookies();
 
